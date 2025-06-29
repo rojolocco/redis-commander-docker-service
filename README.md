@@ -1,73 +1,99 @@
-# Redis Docker Service
+# Redis Commander Docker Service
 
-This project provides a Docker setup for running Redis and Redis Commander, a web-based interface for managing Redis databases.
+A Docker service configuration for [Redis Commander](https://github.com/joeferner/redis-commander), a web management tool for Redis.
 
-## Description
+## Overview
 
-This repository contains Docker configurations to easily deploy Redis and Redis Commander. Redis is an in-memory data structure store, used as a database, cache, and message broker. Redis Commander allows you to manage your Redis databases through a user-friendly web interface.
+Redis Commander is a web-based Redis management application that provides a graphical interface to view, edit, and manage your Redis data. This repository contains a Docker Compose configuration to easily deploy Redis Commander as a containerized service.
 
-## Services
+## Features
 
-- **Redis**: The main service that runs the Redis database.
-  - **Container Name**: redis
-  - **Image**: redis:latest
-  - **Ports**: Exposed on the default Redis port (6379)
-  - **Health Check**: Ensures Redis is running by pinging the server.
+- Web-based Redis management interface
+- Connect to multiple Redis instances
+- View, edit, and delete Redis keys
+- Import/export Redis data
+- Execute Redis commands through the CLI
+- Resource-limited container for predictable performance
 
-- **Redis Commander**: A web interface for managing Redis.
-  - **Container Name**: redis-commander
-  - **Image**: ghcr.io/joeferner/redis-commander:latest
-  - **Ports**: Accessible on port 8083
-  - **Environment Variables**: Loaded from `.env.dev`
+## Requirements
+
+- Docker and Docker Compose
+- Access to a Redis instance
+- External Caddy network (or modify the configuration to use your preferred network)
 
 ## Installation
 
-1. Clone the repository:
+1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
+   git clone https://github.com/yourusername/redis-commander-docker-service.git
+   cd redis-commander-docker-service
    ```
 
-2. Navigate to the project directory:
+2. Create a `.env` file from the example:
 
    ```bash
-   cd your-repo
+   cp .env.example .env
    ```
 
-3. Start the services using Docker Compose:
+3. Edit the `.env` file with your Redis connection details:
 
-   ```bash
-   docker-compose up -d
+   ```env
+   REDIS_HOST=your-redis-host
+   REDIS_PASSWORD=your-redis-password
    ```
+
+## Configuration
+
+### Environment Variables
+
+The following environment variables can be configured in the `.env` file:
+
+- `REDIS_HOST`: The hostname of your Redis server (default: `redis`)
+- `REDIS_PASSWORD`: The password for your Redis server (if required)
+
+Additional environment variables supported by Redis Commander can be added to the `.env` file as needed. See the [Redis Commander documentation](https://github.com/joeferner/redis-commander) for more options.
+
+### Docker Compose Configuration
+
+The `docker-compose.yaml` file includes the following configuration:
+
+- Uses the latest Redis Commander image from GitHub Container Registry
+- Sets resource limits (0.5 CPU, 512MB memory)
+- Runs as the `redis` user for improved security
+- Connects to an external network named `caddy_network`
 
 ## Usage
 
-- Access Redis Commander at [http://localhost:8083](http://localhost:8083) to manage your Redis databases.
-- Use the Redis CLI or any Redis client to connect to the Redis service at `localhost:6379`.
+### Starting the Service
 
-## Contributing
+```bash
+docker-compose up -d
+```
 
-1. Fork the repository.
-2. Create a new branch:
+### Accessing the Web Interface
 
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
+By default, Redis Commander will be available at `http://localhost:8081`. If you're using a reverse proxy with the Caddy network, configure it to route traffic to the `redis-commander` container.
 
-3. Make your changes and commit them:
+### Stopping the Service
 
-   ```bash
-   git commit -m "Add your message"
-   ```
+```bash
+docker-compose down
+```
 
-4. Push to the branch:
+## Security Considerations
 
-   ```bash
-   git push origin feature/YourFeature
-   ```
+- The service runs as the `redis` user instead of root for improved security
+- Always set a strong Redis password in production environments
+- Consider using a reverse proxy with HTTPS for secure access
+- Restrict access to the Redis Commander interface in production environments
 
-5. Open a pull request.
+## Troubleshooting
+
+- If you can't connect to your Redis instance, verify the `REDIS_HOST` and `REDIS_PASSWORD` in your `.env` file
+- Check Docker logs for any errors: `docker-compose logs redis-commander`
+- Ensure your Redis instance is accessible from the Docker network
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE) file for details.
