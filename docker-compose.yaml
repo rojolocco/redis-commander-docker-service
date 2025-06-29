@@ -1,0 +1,21 @@
+services:
+  redis-commander:
+    container_name: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    env_file:
+      - .env
+    user: redis
+    networks:
+      - caddy_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+volumes:
+  data-redis:
+
+networks:
+  caddy_network:
+    external: true
