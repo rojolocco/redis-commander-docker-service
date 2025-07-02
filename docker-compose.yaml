@@ -6,7 +6,7 @@ services:
       - .env
     user: redis
     networks:
-      - caddy_network
+      - traefik_network
     deploy:
       resources:
         limits:
@@ -17,5 +17,5 @@ volumes:
   data-redis:
 
 networks:
-  caddy_network:
+  traefik_network:
     external: true
