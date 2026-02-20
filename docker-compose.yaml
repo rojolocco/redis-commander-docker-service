@@ -6,13 +6,8 @@ services:
       - .env
     user: redis
     networks:
-      - traefik_network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+      - internal_network
 
 networks:
-  traefik_network:
-    external: true
+  internal_network:
+    driver: bridge
